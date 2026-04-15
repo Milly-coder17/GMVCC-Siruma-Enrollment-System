@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMVCC-Siruma Enrollment System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>GMVCC-Siruma Enrollment System</h1>
+    </header>
+
+    <div class="mainLayout">
+
+        <aside class="sidebar">
+            <nav class="nav">
+                <button class="navBtn active" data-page="students">Students</button>
+                <button class="navBtn" data-page="programs">Programs</button>
+                <button class="navBtn" data-page="subjects">Subjects</button>
+                <button class="navBtn" data-page="instructors">Instructors</button>
+                <button class="navBtn" data-page="classes">Class Offerings</button>
+            </nav>
+        </aside>
+
+        <main class="contentArea">
+
+            <div class="page active" id="students">
+                <div class="mainContentHeader">
+                    <h2 id="pageTitle">Students List</h2>
+                    <input type="text" id="searchBar" placeholder="Search student...">
+                    <button class="addBtn" id="addMainBtn">Add Student</button>
+                </div>
+
+                <div class="mainContentArea">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>LRN</th>
+                                <th>Program</th>
+                                <th>Name</th>
+                                <th>Birthdate</th>
+                                <th>Gender</th>
+                                <th>Address</th>
+                                <th>Contact Number</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="programs">
+                <div class="mainContentHeader">
+                    <h2 id="pageTitle">Academic Programs</h2>
+                    <button class="addBtn" id="addProgramBtn">Add Program</button>
+                </div>
+
+                <div class="program-grid" id="programGrid">
+
+                    <div class="program-card" data-id="FISH-01">
+                        <div class="program-tag">Standalone</div>
+                        <h3>BS in Fisheries</h3>
+                        <p>Focuses on sustainable aquatic resource management.</p>
+                        <div class="program-footer">
+                            <span>Total Students: 0</span>
+                        </div>
+                    </div>
+
+                    <div class="program-card" data-id="ENT-01">
+                        <div class="program-tag">Standalone</div>
+                        <h3>BS in Entrepreneurship</h3>
+                        <p>Focuses on business development and management.</p>
+                        <div class="program-footer">
+                            <span>Total Students: 0</span>
+                        </div>
+                    </div>
+
+                    <div class="program-card main-program" data-id="BTVTED-01">
+                        <div class="program-tag">Department</div>
+                        <h3>BTVTED</h3>
+                        <p>Technical Vocational Teacher Education</p>
+
+                        <div class="sub-programs">
+                            <span class="major-badge">Automotive Technology</span>
+                            <span class="major-badge">Computer Hardware</span>
+                            <span class="major-badge">HVAC Technology</span>
+                        </div>
+
+                        <div class="program-footer">
+                            <span>Total Students: 0</span>
+                            <button class="viewBtn">Manage Majors</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="subjects">
+                <div class="mainContentHeader">
+                    <h2 id="pageTitle">Subjects List</h2>
+                    <input type="text" id="searchBar" placeholder="Search subject...">
+                    <button class="addBtn" id="addSubjectBtn">Add Subject</button>
+                </div>
+
+                <div class="mainContentArea">
+                    <div class="spreadsheet-container">
+                        <table class="excel-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">#</th>
+                                    <th style="width: 150px;">Subject Code</th>
+                                    <th>Subject Title</th>
+                                    <th style="width: 150px;">Prerequisuite</th>
+                                    <th style="width: 80px; text-align: center;">Units</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subjectTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="instructors">
+                <div class="mainContentHeader">
+                    <h2>Instructors</h2>
+                    <input type="text" id="searchBar" placeholder="Search instructor...">
+                    <button class="addBtn" id="addInstructorBtn">Add Instructor</button>
+                </div>
+                <div class="mainContentArea">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Contact Number</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="instructorTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="page" id="classes">
+                <div class="mainContentHeader">
+                    <h2 id="pageTitle">Class Offerings</h2>
+                    <input type="text" id="searchBar" placeholder="Search class offering...">
+                    <button class="addBtn" id="addClassBtn">Add Class Offering</button>
+                </div>
+                <div class="mainContentArea">
+                    <div class="spreadsheet-container">
+                        <table class="excel-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                <th>Subject</th>
+                                <th>Section</th>
+                                <th>Room</th>
+                                <th>Semester</th>
+                                <th>School Year</th>
+                                <th>Schedule</th>
+                                <th>Instructor</th>
+                                <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="instructor">
+                <h2>Instructor</h2>
+            </div>
+
+        </main>
+
+    </div>
+
+    <div class="formOverlay" id="studentForm">
+    <div class="formBox">
+        <div class="studentFormHeader">
+            <h2>Add Student</h2>
+            <button id="closeBtn">Close</button>
+        </div>
+        <h3>Student Information</h3>
+        <div class="formGrid">
+            <input type="text" placeholder="LRN" id="lrn" class="full">
+            <div class="triple">
+                <input type="text" placeholder="First Name" id="fname">
+                <input type="text" placeholder="Middle Name" id="mname">
+                <input type="text" placeholder="Last Name" id="lname">
+            </div>
+        <div class="field">
+    <label>Program</label>
+    <select id="program">
+        <option value="">Select Program</option>
+        <option value="BS Fisheries">BS Fisheries</option>
+        <option value="BS Entrepreneurship">BS Entrepreneurship</option>
+        <option value="BTVTED - Automotive">BTVTED - Automotive</option>
+        <option value="BTVTED - Computer Hardware">BTVTED - Computer Hardware</option>
+        <option value="BTVTED - HVAC">BTVTED - HVAC</option>
+    </select>
+</div>
+            <div class="double">
+    <div class="field">
+        <label>Birthdate</label>
+        <input type="date" id="birthdate">
+    </div>
+
+    <div class="field">
+        <label for="gender">Gender</label>
+        <select id="gender">
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+    </div>
+</div>
+            <div class="addressContact full">
+                <input type="text" placeholder="Address" id="address">
+                <input type="text" placeholder="Contact No." id="contact">
+            </div>
+        </div>
+        <h3>Guardian</h3>
+        <div class="formGrid">
+            <div class="triple">
+                <input type="text" placeholder="First Name" id="gfname">
+                <input type="text" placeholder="Middle Name" id="gmname">
+                <input type="text" placeholder="Last Name" id="glname">
+            </div>
+            <div class="guardianRow full">
+                <input type="text" placeholder="Contact No." id="gcontact">
+                <input type="text" placeholder="Relationship" id="relationship">
+            </div>
+        </div>
+        <div class="formActions">
+            <button id="addStudentBtn">Add</button>
+            <button id="clearBtn">Clear</button>
+        </div>
+    </div>
+    </div>
+
+    <div class="formOverlay" id="programForm">
+    <div class="formBox">
+        <div class="studentFormHeader">
+            <h2>Add Program</h2>
+            <button id="closeBtn2">Close</button>
+        </div>
+        <div class="formGrid">
+            <input type="text" id="programName" placeholder="Program Name">
+            <input type="text" id="programDesc" placeholder="Program Description">
+            <select id="programType">
+                <option value="Standalone">Standalone</option>
+                <option value="Department">Department</option>
+            </select>
+        </div>
+        <div class="formActions">
+            <button id="saveProgramBtn">Add</button>
+        </div>
+    </div>
+    </div>
+    
+    <div class="formOverlay" id="subjectForm">
+    <div class="formBox">
+        <div class="studentFormHeader">
+            <h2>Add Subject</h2>
+            <button id="closeSubjectBtn">Close</button>
+        </div>
+        <div class="formGrid">
+            <input type="text" id="subjectCode" placeholder="Subject Code">
+            <input type="text" id="subjectTitle" placeholder="Subject Title">
+            <input type="number" id="subjectUnits" placeholder="Units">
+        </div>
+        <div class="formActions">
+            <button type="button" id="saveSubjectBtn">Add</button>
+            <button type="button" id="clearSubjectBtn">Clear</button>
+        </div>
+    </div>
+    </div>
+
+    <div class="formOverlay" id="instructorForm">
+    <div class="formBox">
+        <div class="studentFormHeader">
+            <h2>Add Instructor</h2>
+            <button type="button" id="closeInstructorBtn">Close</button>
+        </div>
+        <div class="formGrid">
+            <div class="triple">
+                <input type="text" id="ifname" placeholder="First Name">
+                <input type="text" id="imname" placeholder="Middle Name">
+                <input type="text" id="ilname" placeholder="Last Name">
+            </div>
+            <input type="text" id="idepartment" placeholder="Department">
+
+            <input type="text" id="icontact" placeholder="Contact Number">
+        </div>
+        <div class="formActions">
+            <button type="button" id="saveInstructorBtn">Add</button>
+            <button type="button" id="clearInstructorBtn">Clear</button>
+        </div>
+    </div>
+    </div>
+
+    <div class="formOverlay" id="classForm">
+    <div class="formBox">
+        <div class="studentFormHeader">
+            <h2>Add Class Offering</h2>
+            <button type="button" id="closeClassBtn">Close</button>
+        </div>
+        <div class="formGrid">
+            <select id="classSubject">
+                <option value="">Select Subject</option>
+            </select>
+            
+            <select id="classSection">
+                <option value="">Select Section</option>
+                <option value="A">Section A</option>
+                <option value="B">Section B</option>
+                <option value="C">Section C</option>
+            </select>
+
+            <input type="text" id="classRoom" placeholder="Room">
+            <input type="text" id="classSemester" placeholder="Semester">
+            <input type="text" id="classSchoolYear" placeholder="School Year (e.g. 2025-2026)">
+
+            <select id="classSchedule">
+                <option value="">Select Schedule</option>
+                <option value="MWF 8:00AM - 9:30AM">MWF 8:00AM - 9:30AM</option>
+                <option value="TTH 1:00PM - 2:30PM">TTH 1:00PM - 2:30PM</option>
+                <option value="SAT 8:00AM - 12:00PM">SAT 8:00AM - 12:00PM</option>
+            </select>
+
+            <select id="classInstructor">
+                <option value="">Select Instructor</option>
+            
+            </select>
+        </div>
+
+        <div class="formActions">
+            <button type="button" id="saveClassBtn">Add</button>
+            <button type="button" id="clearClassBtn">Clear</button>
+        </div>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
