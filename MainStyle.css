@@ -1,7 +1,7 @@
 * {
     box-sizing: border-box;
     margin: 0;
-    padding: 0;
+    padding: 0; 
     font-family: "Nunito Sans", sans-serif;
 }
 
@@ -36,7 +36,7 @@ body {
     min-width: 220px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
     padding: 20px;
     background: #e6e6e6;
     overflow-y: auto;
@@ -49,7 +49,8 @@ body {
     text-align: left;
     cursor: pointer;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 25px;
+    font-family: "Lora", sans-serif;
     transition: 0.2s;
 }
 
@@ -206,6 +207,7 @@ table td:last-child {
 .navItem {
     display: flex;
     flex-direction: column;
+    gap: 4px;
 }
 
 .dropdown {
@@ -216,6 +218,7 @@ table td:last-child {
     display: flex;
     flex-direction: column;
     padding-left: 15px;
+    gap: 2px;
 }
 
 .subButton {
@@ -225,9 +228,8 @@ table td:last-child {
     text-align: left;
     cursor: pointer;
     border-radius: 6px;
-    font-size: 13px;
-    margin-top: 4px;
-    margin-bottom: 4px;
+    font-size: 12px;
+    margin: 0;
 }
 
 .subButton:hover {

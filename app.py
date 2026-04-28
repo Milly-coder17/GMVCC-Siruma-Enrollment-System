@@ -6,7 +6,6 @@ from flask_cors import CORS
 import mysql.connector
 from mysql.connector import Error
 
-
 app = Flask(__name__)
 CORS(app)
 
@@ -17,10 +16,8 @@ DB_CONFIG = {
     "database": "enrollment_system",
 }
 
-
 def get_db():
     return mysql.connector.connect(**DB_CONFIG)
-
 
 def pick(data, *keys):
     for key in keys:
@@ -28,15 +25,12 @@ def pick(data, *keys):
             return data.get(key)
     return None
 
-
 def optional(value):
     return None if value in ("", None) else value
-
 
 def optional_int(value):
     value = optional(value)
     return int(value) if value is not None else None
-
 
 def json_value(value):
     if isinstance(value, datetime):
@@ -50,10 +44,8 @@ def json_value(value):
         return float(value)
     return value
 
-
 def json_rows(rows):
     return [{key: json_value(value) for key, value in row.items()} for row in rows]
-
 
 def fetch_all(sql, params=()):
     db = get_db()
@@ -64,7 +56,6 @@ def fetch_all(sql, params=()):
     finally:
         cursor.close()
         db.close()
-
 
 def execute(sql, params=(), return_id=False):
     db = get_db()
@@ -80,14 +71,12 @@ def execute(sql, params=(), return_id=False):
         cursor.close()
         db.close()
 
-
 def db_error(error):
     if getattr(error, "errno", None) == 1062:
         return jsonify({"error": "Duplicate record. Please check unique fields."}), 409
-    if getattr(error, "errno", None) in (1048, 1451, 1452):
+    if getattr(error, "errno", None) in (1451, 1452):
         return jsonify({"error": "Related record is missing or still in use."}), 409
     return jsonify({"error": f"Database error: {error}"}), 500
-
 
 def ensure_database():
     statements = [
@@ -272,7 +261,6 @@ def ensure_database():
         cursor.close()
         db.close()
 
-
 try:
     ensure_database()
 except Error as error:
@@ -287,7 +275,6 @@ def health():
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.get_json(silent=True) or {}
@@ -299,7 +286,6 @@ def login():
         return jsonify({"success": bool(rows), "user": rows[0] if rows else None})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/students", methods=["GET", "POST"])
 def students():
@@ -355,7 +341,7 @@ def students():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/students/<int:student_id>", methods=["DELETE"])
 @app.route("/api/students/<int:student_id>", methods=["PUT"])
 def update_student(student_id):
     try:
@@ -415,7 +401,6 @@ def delete_student(student_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/guardians", methods=["GET", "POST"])
 def guardians():
     try:
@@ -438,7 +423,7 @@ def guardians():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/guardians/<int:guardian_id>", methods=["DELETE"])
 @app.route("/api/guardians/<int:guardian_id>", methods=["PUT"])
 def update_guardian(guardian_id):
     try:
@@ -464,7 +449,6 @@ def update_guardian(guardian_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/guardians/<int:guardian_id>", methods=["DELETE"])
 def delete_guardian(guardian_id):
     try:
@@ -477,7 +461,6 @@ def delete_guardian(guardian_id):
         return jsonify({"message": "Guardian deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/programs", methods=["GET", "POST"])
 def programs():
@@ -494,7 +477,7 @@ def programs():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/programs/<int:program_id>", methods=["DELETE"])
 @app.route("/api/programs/<int:program_id>", methods=["PUT"])
 def update_program(program_id):
     try:
@@ -507,7 +490,6 @@ def update_program(program_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/programs/<int:program_id>", methods=["DELETE"])
 def delete_program(program_id):
     try:
@@ -518,7 +500,6 @@ def delete_program(program_id):
         return jsonify({"message": "Program deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/subjects", methods=["GET", "POST"])
 def subjects():
@@ -539,7 +520,7 @@ def subjects():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/subjects/<subject_code>", methods=["DELETE"])
 @app.route("/api/subjects/<subject_code>", methods=["PUT"])
 def update_subject(subject_code):
     try:
@@ -563,7 +544,6 @@ def update_subject(subject_code):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/subjects/<subject_code>", methods=["DELETE"])
 def delete_subject(subject_code):
     try:
@@ -574,7 +554,6 @@ def delete_subject(subject_code):
         return jsonify({"message": "Subject deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/sections", methods=["GET", "POST"])
 def sections():
@@ -591,7 +570,7 @@ def sections():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/sections/<int:section_id>", methods=["DELETE"])
 @app.route("/api/sections/<int:section_id>", methods=["PUT"])
 def update_section(section_id):
     try:
@@ -604,33 +583,14 @@ def update_section(section_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/sections/<int:section_id>", methods=["DELETE"])
 def delete_section(section_id):
     try:
-        linked_rows = fetch_all(
-            "SELECT COUNT(*) AS linked_count FROM class_offering WHERE section_id = %s",
-            (section_id,),
-        )
-        linked_count = linked_rows[0]["linked_count"] if linked_rows else 0
-
-        if linked_count:
-            try:
-                execute("UPDATE class_offering SET section_id = NULL WHERE section_id = %s", (section_id,))
-            except Error as error:
-                if getattr(error, "errno", None) in (1048, 1451, 1452):
-                    return jsonify({
-                        "error": f"Section is still used by {linked_count} class offering(s). Reassign or delete those class offerings first."
-                    }), 409
-                raise
-
-        deleted = execute("DELETE FROM section WHERE id = %s", (section_id,))
-        if deleted == 0:
-            return jsonify({"error": "Section not found."}), 404
+        execute("UPDATE class_offering SET section_id = NULL WHERE section_id = %s", (section_id,))
+        execute("DELETE FROM section WHERE id = %s", (section_id,))
         return jsonify({"message": "Section deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/instructors", methods=["GET", "POST"])
 def instructors():
@@ -647,7 +607,7 @@ def instructors():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/instructors/<int:instructor_id>", methods=["DELETE"])
 @app.route("/api/instructors/<int:instructor_id>", methods=["PUT"])
 def update_instructor(instructor_id):
     try:
@@ -671,7 +631,6 @@ def update_instructor(instructor_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/instructors/<int:instructor_id>", methods=["DELETE"])
 def delete_instructor(instructor_id):
     try:
@@ -680,7 +639,6 @@ def delete_instructor(instructor_id):
         return jsonify({"message": "Instructor deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/schedules", methods=["GET", "POST"])
 def schedules():
@@ -697,7 +655,7 @@ def schedules():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/schedules/<int:schedule_id>", methods=["DELETE"])
 @app.route("/api/schedules/<int:schedule_id>", methods=["PUT"])
 def update_schedule(schedule_id):
     try:
@@ -716,7 +674,6 @@ def update_schedule(schedule_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/schedules/<int:schedule_id>", methods=["DELETE"])
 def delete_schedule(schedule_id):
     try:
@@ -726,7 +683,6 @@ def delete_schedule(schedule_id):
         return jsonify({"message": "Schedule deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/class-offerings", methods=["GET", "POST"])
 def class_offerings():
@@ -770,7 +726,7 @@ def class_offerings():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/class-offerings/<int:class_id>", methods=["DELETE"])
 @app.route("/api/class-offerings/<int:class_id>", methods=["PUT"])
 def update_class_offering(class_id):
     try:
@@ -806,7 +762,6 @@ def update_class_offering(class_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/class-offerings/<int:class_id>", methods=["DELETE"])
 def delete_class_offering(class_id):
     try:
@@ -816,7 +771,6 @@ def delete_class_offering(class_id):
         return jsonify({"message": "Class offering deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/relationships", methods=["GET", "POST"])
 def relationships():
@@ -845,7 +799,7 @@ def relationships():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/relationships/<int:relationship_id>", methods=["DELETE"])
 @app.route("/api/relationships/<int:relationship_id>", methods=["PUT"])
 def update_relationship(relationship_id):
     try:
@@ -876,7 +830,6 @@ def update_relationship(relationship_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/relationships/<int:relationship_id>", methods=["DELETE"])
 def delete_relationship(relationship_id):
     try:
@@ -890,7 +843,6 @@ def delete_relationship(relationship_id):
         return jsonify({"message": "Relationship deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/enrollments", methods=["GET", "POST"])
 def enrollments():
@@ -922,7 +874,7 @@ def enrollments():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/enrollments/<int:enrollment_id>", methods=["DELETE"])
 @app.route("/api/enrollments/<int:enrollment_id>", methods=["PUT"])
 def update_enrollment(enrollment_id):
     try:
@@ -935,7 +887,6 @@ def update_enrollment(enrollment_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/enrollments/<int:enrollment_id>", methods=["DELETE"])
 def delete_enrollment(enrollment_id):
     try:
@@ -943,7 +894,6 @@ def delete_enrollment(enrollment_id):
         return jsonify({"message": "Enrollment deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/program-history", methods=["GET", "POST"])
 def program_history():
@@ -976,7 +926,7 @@ def program_history():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/program-history/<int:history_id>", methods=["DELETE"])
 @app.route("/api/program-history/<int:history_id>", methods=["PUT"])
 def update_program_history(history_id):
     try:
@@ -1004,7 +954,6 @@ def update_program_history(history_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/program-history/<int:history_id>", methods=["DELETE"])
 def delete_program_history(history_id):
     try:
@@ -1012,7 +961,6 @@ def delete_program_history(history_id):
         return jsonify({"message": "Program history deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/curriculums", methods=["GET", "POST"])
 def curriculums():
@@ -1038,7 +986,7 @@ def curriculums():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/curriculums/<int:curriculum_id>", methods=["DELETE"])
 @app.route("/api/curriculums/<int:curriculum_id>", methods=["PUT"])
 def update_curriculum(curriculum_id):
     try:
@@ -1064,7 +1012,6 @@ def update_curriculum(curriculum_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/curriculums/<int:curriculum_id>", methods=["DELETE"])
 def delete_curriculum(curriculum_id):
     try:
@@ -1072,7 +1019,6 @@ def delete_curriculum(curriculum_id):
         return jsonify({"message": "Curriculum deleted"})
     except Error as error:
         return db_error(error)
-
 
 @app.route("/api/class-schedules", methods=["GET", "POST"])
 def class_schedules():
@@ -1101,7 +1047,7 @@ def class_schedules():
     except Error as error:
         return db_error(error)
 
-
+@app.route("/api/class-schedules/<int:class_schedule_id>", methods=["DELETE"])
 @app.route("/api/class-schedules/<int:class_schedule_id>", methods=["PUT"])
 def update_class_schedule(class_schedule_id):
     try:
@@ -1114,7 +1060,6 @@ def update_class_schedule(class_schedule_id):
     except Error as error:
         return db_error(error)
 
-
 @app.route("/api/class-schedules/<int:class_schedule_id>", methods=["DELETE"])
 def delete_class_schedule(class_schedule_id):
     try:
@@ -1122,7 +1067,6 @@ def delete_class_schedule(class_schedule_id):
         return jsonify({"message": "Class schedule deleted"})
     except Error as error:
         return db_error(error)
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000, use_reloader=False)
