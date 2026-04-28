@@ -3,358 +3,634 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GMVCC-Siruma Enrollment System</title>
-
-    <link rel="stylesheet" href="style.css">
-
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="MainStyle.css">
+    <title>GMVCC-Siruma Enrollment System</title>
 </head>
-
 <body>
-
-    <header class="header">
+    
+    <div class="topHeader">
         <h1>GMVCC-Siruma Enrollment System</h1>
-    </header>
-
-    <div class="mainLayout">
-
-        <aside class="sidebar">
-            <nav class="nav">
-                <button class="navBtn active" data-page="students">Students</button>
-                <button class="navBtn" data-page="programs">Programs</button>
-                <button class="navBtn" data-page="subjects">Subjects</button>
-                <button class="navBtn" data-page="instructors">Instructors</button>
-                <button class="navBtn" data-page="classes">Class Offerings</button>
-            </nav>
-        </aside>
-
-        <main class="contentArea">
-
-            <div class="page active" id="students">
-                <div class="mainContentHeader">
-                    <h2 id="pageTitle">Students List</h2>
-                    <input type="text" id="searchBar" placeholder="Search student...">
-                    <button class="addBtn" id="addMainBtn">Add Student</button>
-                </div>
-
-                <div class="mainContentArea">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>LRN</th>
-                                <th>Program</th>
-                                <th>Name</th>
-                                <th>Birthdate</th>
-                                <th>Gender</th>
-                                <th>Address</th>
-                                <th>Contact Number</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="studentTable"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="page" id="programs">
-                <div class="mainContentHeader">
-                    <h2 id="pageTitle">Academic Programs</h2>
-                    <button class="addBtn" id="addProgramBtn">Add Program</button>
-                </div>
-
-                <div class="program-grid" id="programGrid">
-
-                    <div class="program-card" data-id="FISH-01">
-                        <div class="program-tag">Standalone</div>
-                        <h3>BS in Fisheries</h3>
-                        <p>Focuses on sustainable aquatic resource management.</p>
-                        <div class="program-footer">
-                            <span>Total Students: 0</span>
-                        </div>
-                    </div>
-
-                    <div class="program-card" data-id="ENT-01">
-                        <div class="program-tag">Standalone</div>
-                        <h3>BS in Entrepreneurship</h3>
-                        <p>Focuses on business development and management.</p>
-                        <div class="program-footer">
-                            <span>Total Students: 0</span>
-                        </div>
-                    </div>
-
-                    <div class="program-card main-program" data-id="BTVTED-01">
-                        <div class="program-tag">Department</div>
-                        <h3>BTVTED</h3>
-                        <p>Technical Vocational Teacher Education</p>
-
-                        <div class="sub-programs">
-                            <span class="major-badge">Automotive Technology</span>
-                            <span class="major-badge">Computer Hardware</span>
-                            <span class="major-badge">HVAC Technology</span>
-                        </div>
-
-                        <div class="program-footer">
-                            <span>Total Students: 0</span>
-                            <button class="viewBtn">Manage Majors</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="page" id="subjects">
-                <div class="mainContentHeader">
-                    <h2 id="pageTitle">Subjects List</h2>
-                    <input type="text" id="searchBar" placeholder="Search subject...">
-                    <button class="addBtn" id="addSubjectBtn">Add Subject</button>
-                </div>
-
-                <div class="mainContentArea">
-                    <div class="spreadsheet-container">
-                        <table class="excel-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40px;">#</th>
-                                    <th style="width: 150px;">Subject Code</th>
-                                    <th>Subject Title</th>
-                                    <th style="width: 150px;">Prerequisuite</th>
-                                    <th style="width: 80px; text-align: center;">Units</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="subjectTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="page" id="instructors">
-                <div class="mainContentHeader">
-                    <h2>Instructors</h2>
-                    <input type="text" id="searchBar" placeholder="Search instructor...">
-                    <button class="addBtn" id="addInstructorBtn">Add Instructor</button>
-                </div>
-                <div class="mainContentArea">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Department</th>
-                                <th>Contact Number</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="instructorTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="page" id="classes">
-                <div class="mainContentHeader">
-                    <h2 id="pageTitle">Class Offerings</h2>
-                    <input type="text" id="searchBar" placeholder="Search class offering...">
-                    <button class="addBtn" id="addClassBtn">Add Class Offering</button>
-                </div>
-                <div class="mainContentArea">
-                    <div class="spreadsheet-container">
-                        <table class="excel-table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                <th>Subject</th>
-                                <th>Section</th>
-                                <th>Room</th>
-                                <th>Semester</th>
-                                <th>School Year</th>
-                                <th>Schedule</th>
-                                <th>Instructor</th>
-                                <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="classTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="page" id="instructor">
-                <h2>Instructor</h2>
-            </div>
-
-        </main>
-
     </div>
 
-    <div class="formOverlay" id="studentForm">
-    <div class="formBox">
-        <div class="studentFormHeader">
-            <h2>Add Student</h2>
-            <button id="closeBtn">Close</button>
-        </div>
-        <h3>Student Information</h3>
-        <div class="formGrid">
-            <input type="text" placeholder="LRN" id="lrn" class="full">
-            <div class="triple">
-                <input type="text" placeholder="First Name" id="fname">
-                <input type="text" placeholder="Middle Name" id="mname">
-                <input type="text" placeholder="Last Name" id="lname">
+    <div class="mainBody">
+        <nav class="sideBar">
+            <div class="navItem">
+                <button class="navButton hasDropdown"> Students & Guardians <span class="arrow">▶</span>
+                </button>
+                <div class="dropdown">
+                    <button class="subButton active" data-page="students">Students</button>
+                    <button class="subButton" data-page="guardians">Guardians</button>
+                    <button class="subButton" data-page="relationships">Relationships</button>
+                    <button class="subButton" data-page="enrollments">Enrollments</button>
+                    <button class="subButton" data-page="programHistory">Program History</button>
+                </div>
             </div>
-        <div class="field">
-    <label>Program</label>
-    <select id="program">
-        <option value="">Select Program</option>
-        <option value="BS Fisheries">BS Fisheries</option>
-        <option value="BS Entrepreneurship">BS Entrepreneurship</option>
-        <option value="BTVTED - Automotive">BTVTED - Automotive</option>
-        <option value="BTVTED - Computer Hardware">BTVTED - Computer Hardware</option>
-        <option value="BTVTED - HVAC">BTVTED - HVAC</option>
-    </select>
-</div>
-            <div class="double">
-    <div class="field">
-        <label>Birthdate</label>
-        <input type="date" id="birthdate">
-    </div>
+            <div class="navItem">
+                <button class="navButton hasDropdown">
+                    Class Offerings
+                    <span class="arrow">▶</span>
+                </button>
 
-    <div class="field">
-        <label for="gender">Gender</label>
-        <select id="gender">
-            <option value="">Select</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
-    </div>
-</div>
-            <div class="addressContact full">
-                <input type="text" placeholder="Address" id="address">
-                <input type="text" placeholder="Contact No." id="contact">
+                <div class="dropdown">
+                    <button class="subButton" data-page="classOfferings">Class Offerings</button>
+                    <button class="subButton" data-page="classSchedules">Class Schedules</button>
+                    <button class="subButton" data-page="subjects">Subjects</button>
+                    <button class="subButton" data-page="curriculums">Curriculum</button>
+                    <button class="subButton" data-page="sections">Sections</button>
+                    <button class="subButton" data-page="instructors">Instructors</button>
+                    <button class="subButton" data-page="schedules">Schedules</button>
+                </div>
             </div>
-        </div>
-        <h3>Guardian</h3>
-        <div class="formGrid">
-            <div class="triple">
-                <input type="text" placeholder="First Name" id="gfname">
-                <input type="text" placeholder="Middle Name" id="gmname">
-                <input type="text" placeholder="Last Name" id="glname">
-            </div>
-            <div class="guardianRow full">
-                <input type="text" placeholder="Contact No." id="gcontact">
-                <input type="text" placeholder="Relationship" id="relationship">
-            </div>
-        </div>
-        <div class="formActions">
-            <button id="addStudentBtn">Add</button>
-            <button id="clearBtn">Clear</button>
-        </div>
-    </div>
-    </div>
+            <button class="programButton" data-page="programs">Programs</button>
+        </nav>
 
-    <div class="formOverlay" id="programForm">
-    <div class="formBox">
-        <div class="studentFormHeader">
-            <h2>Add Program</h2>
-            <button id="closeBtn2">Close</button>
+    <main class="contentArea">
+        <div class="page active" id="students">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Students List</h2>
+                <input type="text" id="searchStudentBar" placeholder="Search student...">
+                <button class="addButton" id="addStudentBtn">Add Student</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 120px;">LRN</th>
+                            <th style="width: 180px;">Program</th>
+                            <th style="width: 200px;">Name</th>
+                            <th style="width: 130px;">Birthdate</th>
+                            <th style="width: 100px;">Gender</th>
+                            <th style="width: 300px;">Address</th>
+                            <th style="width: 150px;">Contact Number</th>
+                            <th style="width: 220px;">Guardian</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTable"></tbody>
+                </table>
+            </div>
         </div>
-        <div class="formGrid">
-            <input type="text" id="programName" placeholder="Program Name">
-            <input type="text" id="programDesc" placeholder="Program Description">
-            <select id="programType">
-                <option value="Standalone">Standalone</option>
-                <option value="Department">Department</option>
-            </select>
+
+        <div class="page" id="guardians">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Guardians List</h2>
+                <input type="text" id="searchGuardianBar" placeholder="Search guardian...">
+                <button class="addButton" id="addMainBtn">Add Guardian</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 240px;">Name</th>
+                            <th style="width: 180px;">Contact Number</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guardiansTable"></tbody>
+                </table>
+            </div>
         </div>
-        <div class="formActions">
-            <button id="saveProgramBtn">Add</button>
+
+        <div class="page" id="relationships">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Relationships List</h2>
+                <input type="text" id="searchRelationshipBar" placeholder="Search relationship...">
+                <button class="addButton" id="addMainBtn">Add Relationship</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 260px;">Student</th>
+                            <th style="width: 260px;">Guardian</th>
+                            <th style="width: 160px;">Relationship Type</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="relationshipsTable"></tbody>
+                </table>
+            </div>
         </div>
-    </div>
+
+        <div class="page" id="enrollments">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Enrollments List</h2>
+                <input type="text" id="searchEnrollmentBar" placeholder="Search enrollment...">
+                <button class="addButton" id="addMainBtn">Add Enrollment</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 240px;">Student</th>
+                            <th style="width: 320px;">Class Offering</th>
+                            <th style="width: 140px;">Section</th>
+                            <th style="width: 120px;">School Year</th>
+                            <th style="width: 90px;">Sem</th>
+                            <th style="width: 180px;">Timestamp</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="enrollmentsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="page" id="programHistory">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Program History List</h2>
+                <input type="text" id="searchProgramHistoryBar" placeholder="Search program history...">
+                <button class="addButton" id="addMainBtn">Add Program History</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 240px;">Student</th>
+                            <th style="width: 260px;">Program</th>
+                            <th style="width: 120px;">School Year</th>
+                            <th style="width: 90px;">Semester</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="programHistoryTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="page" id="classOfferings">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Class Offerings List</h2>
+                <input type="text" id="searchClassOffering" placeholder="Search class offering...">
+                <button class="addButton" id="addMainBtn">Add Class Offering</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 120px; text-align: center;">Room</th>
+                            <th style="width: 140px; text-align: center;">Section</th>
+                            <th style="width: 280px; text-align: center;">Subject</th>
+                            <th style="width: 180px; text-align: center;">Schedule</th>
+                            <th style="width: 200px; text-align: center;">Instructor</th>
+                            <th style="width: 120px; text-align: center;">School Year</th>
+                            <th style="width: 80px; text-align: center;">Sem</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="offeringsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="page" id="classSchedules">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Class Schedules List</h2>
+                <input type="text" id="searchClassScheduleBar" placeholder="Search class schedule...">
+                <button class="addButton" id="addMainBtn">Add Class Schedule</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 320px;">Class Offering</th>
+                            <th style="width: 140px;">Section</th>
+                            <th style="width: 180px;">Schedule</th>
+                            <th style="width: 120px;">School Year</th>
+                            <th style="width: 90px;">Sem</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classSchedulesTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="page" id="subjects">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Subjects List</h2>
+                <input type="text" id="searchSubjectBar" placeholder="Search subject...">
+                <button class="addButton" id="addSubjectBtn">Add Subject</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 160px; text-align: center;">Subject Code</th>
+                            <th style="width: 280px;">Title</th>
+                            <th style="width: 90px;">Units</th>
+                            <th style="width: 180px;">Prerequisite</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subjectsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="page" id="curriculums">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Curriculum List</h2>
+                <input type="text" id="searchCurriculumBar" placeholder="Search curriculum...">
+                <button class="addButton" id="addMainBtn">Add Curriculum</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 260px;">Program</th>
+                            <th style="width: 320px;">Subject</th>
+                            <th style="width: 90px;">Year Level</th>
+                            <th style="width: 90px;">Semester</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="curriculumsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="page" id="sections">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Sections List</h2>
+                <input type="text" id="searchSectionBar" placeholder="Search section...">
+                <button class="addButton" id="addMainBtn">Add Section</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 180px;">Section Name</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sectionsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="page" id="instructors">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Instructors List</h2>
+                <input type="text" id="searchInstructorBar" placeholder="Search instructor...">
+                <button class="addButton" id="addMainBtn">Add Instructor</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 240px;">Name</th>
+                            <th style="width: 180px;">Department</th>
+                            <th style="width: 180px;">Contact Number</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="instructorsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="page" id="schedules">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Schedules List</h2>
+                <input type="text" id="searchScheduleBar" placeholder="Search schedule...">
+                <button class="addButton" id="addMainBtn">Add Schedule</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 140px;">Day</th>
+                            <th style="width: 110px;">Time Start</th>
+                            <th style="width: 110px;">Time End</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedulesTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="page" id="programs">
+            <div class="mainContentHeader">
+                <h2 id="pageTitle">Programs List</h2>
+                <input type="text" id="searchProgram" placeholder="Search program...">
+                <button class="addButton" id="addMainBtn">Add Program</button>
+            </div>
+
+            <div class="mainContentArea">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 46px; text-align: center;">No.</th>
+                            <th style="width: 240px; text-align: center;">Program Name</th>
+                            <th style="width: 240px; text-align: center;">Major</th>
+                            <th style="width: 130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="programsTable"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
     
-    <div class="formOverlay" id="subjectForm">
-    <div class="formBox">
-        <div class="studentFormHeader">
-            <h2>Add Subject</h2>
-            <button id="closeSubjectBtn">Close</button>
-        </div>
-        <div class="formGrid">
-            <input type="text" id="subjectCode" placeholder="Subject Code">
-            <input type="text" id="subjectTitle" placeholder="Subject Title">
-            <input type="number" id="subjectUnits" placeholder="Units">
-        </div>
-        <div class="formActions">
-            <button type="button" id="saveSubjectBtn">Add</button>
-            <button type="button" id="clearSubjectBtn">Clear</button>
-        </div>
-    </div>
-    </div>
+    <div class="formModal" id="studentFormModal" style="display:none;">
+        <div class="formContainer">
+            <h3>Add Student</h3>
 
-    <div class="formOverlay" id="instructorForm">
-    <div class="formBox">
-        <div class="studentFormHeader">
-            <h2>Add Instructor</h2>
-            <button type="button" id="closeInstructorBtn">Close</button>
-        </div>
-        <div class="formGrid">
-            <div class="triple">
-                <input type="text" id="ifname" placeholder="First Name">
-                <input type="text" id="imname" placeholder="Middle Name">
-                <input type="text" id="ilname" placeholder="Last Name">
+            <div class="formGrid">
+                <input type="text" id="lrn" placeholder="LRN">
+
+                <input type="text" id="firstName" placeholder="First Name">
+                <input type="text" id="middleName" placeholder="Middle Name">
+                <input type="text" id="lastName" placeholder="Last Name">
+
+                <div class="formHint">
+                    <span>Gender</span>
+                    <select id="gender">
+                        <option value="">Select Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
+                </div>
+
+                <div class="formHint">
+                    <span>Birthdate</span>
+                    <input type="date" id="birthdate">
+                </div>
+
+                <input type="text" id="contact" placeholder="Contact Number">
+
+                <select id="program">
+                    <option value="">Program</option>
+                    <option>BSIT</option>
+                    <option>BSBA</option>
+                    <option>BSED</option>
+                    <option>BSHM</option>
+                </select>
+
+                <input type="text" id="address" placeholder="Address" class="fullWidth">
+
+                <div class="formHint">
+                    <span>Guardian</span>
+                    <select id="studentGuardianSelect"></select>
+                </div>
+
+                <input type="text" id="studentRelationshipType" placeholder="Relationship Type">
             </div>
-            <input type="text" id="idepartment" placeholder="Department">
 
-            <input type="text" id="icontact" placeholder="Contact Number">
-        </div>
-        <div class="formActions">
-            <button type="button" id="saveInstructorBtn">Add</button>
-            <button type="button" id="clearInstructorBtn">Clear</button>
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveStudent">Save</button>
+                <button id="closeStudentForm">Cancel</button>
+            </div>
         </div>
     </div>
-    </div>
 
-    <div class="formOverlay" id="classForm">
-    <div class="formBox">
-        <div class="studentFormHeader">
-            <h2>Add Class Offering</h2>
-            <button type="button" id="closeClassBtn">Close</button>
-        </div>
-        <div class="formGrid">
-            <select id="classSubject">
-                <option value="">Select Subject</option>
-            </select>
-            
-            <select id="classSection">
-                <option value="">Select Section</option>
-                <option value="A">Section A</option>
-                <option value="B">Section B</option>
-                <option value="C">Section C</option>
-            </select>
+    <div class="formModal" id="guardianFormModal">
+        <div class="formContainer">
+            <h3>Add Guardian</h3>
 
-            <input type="text" id="classRoom" placeholder="Room">
-            <input type="text" id="classSemester" placeholder="Semester">
-            <input type="text" id="classSchoolYear" placeholder="School Year (e.g. 2025-2026)">
+            <div class="formGrid">
+                <input type="text" id="gFirstName" placeholder="First Name">
+                <input type="text" id="gMiddleName" placeholder="Middle Name">
 
-            <select id="classSchedule">
-                <option value="">Select Schedule</option>
-                <option value="MWF 8:00AM - 9:30AM">MWF 8:00AM - 9:30AM</option>
-                <option value="TTH 1:00PM - 2:30PM">TTH 1:00PM - 2:30PM</option>
-                <option value="SAT 8:00AM - 12:00PM">SAT 8:00AM - 12:00PM</option>
-            </select>
+                <input type="text" id="gLastName" placeholder="Last Name">
+                <input type="text" id="gContact" placeholder="Contact Number">
+            </div>
 
-            <select id="classInstructor">
-                <option value="">Select Instructor</option>
-            
-            </select>
-        </div>
-
-        <div class="formActions">
-            <button type="button" id="saveClassBtn">Add</button>
-            <button type="button" id="clearClassBtn">Clear</button>
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveGuardian">Save</button>
+                <button id="closeGuardianForm">Cancel</button>
+            </div>
         </div>
     </div>
-</div>
+
+    <div class="formModal" id="relationshipFormModal">
+        <div class="formContainer">
+            <h3>Add Relationship</h3>
+
+            <div class="formGrid">
+                <select id="relStudent"></select>
+                <select id="relGuardian"></select>
+                <input type="text" id="relType" placeholder="Relationship Type" class="fullWidth">
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveRelationship">Save</button>
+                <button id="closeRelationshipForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="enrollmentFormModal">
+        <div class="formContainer">
+            <h3>Add Enrollment</h3>
+
+            <div class="formGrid">
+                <select id="enStudent"></select>
+                <select id="enClass"></select>
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveEnrollment">Save</button>
+                <button id="closeEnrollmentForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="programHistoryFormModal">
+        <div class="formContainer">
+            <h3>Add Program History</h3>
+
+            <div class="formGrid">
+                <select id="phStudent"></select>
+                <select id="phProgram"></select>
+                <input type="text" id="phSchoolYear" placeholder="School Year">
+                <input type="text" id="phSemester" placeholder="Semester">
+                <input type="text" id="phStatus" placeholder="Status" class="fullWidth">
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveProgramHistory">Save</button>
+                <button id="closeProgramHistoryForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="classOfferingFormModal">
+        <div class="formContainer">
+            <h3>Add Class Offering</h3>
+
+            <div class="formGrid">
+
+                <input type="text" id="coRoom" placeholder="Room">
+
+                <select id="coSection"></select>
+                <select id="coSubject"></select>
+                <select id="coSchedule"></select>
+                <select id="coInstructor"></select>
+
+                <input type="text" id="coSchoolYear" placeholder="School Year (e.g. 2025-2026)">
+                <input type="text" id="coSem" placeholder="Semester (1st / 2nd)">
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveClassOffering">Save</button>
+                <button id="closeClassOfferingForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="classScheduleFormModal">
+        <div class="formContainer">
+            <h3>Add Class Schedule</h3>
+
+            <div class="formGrid">
+                <select id="csClass"></select>
+                <select id="csSchedule"></select>
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveClassSchedule">Save</button>
+                <button id="closeClassScheduleForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="subjectFormModal">
+        <div class="formContainer">
+            <h3>Add Subject</h3>
+
+            <div class="formGrid">
+                <input type="text" id="subCode" placeholder="Subject Code">
+                <input type="text" id="subUnits" placeholder="Units">
+
+                <input type="text" id="subTitle" placeholder="Title" class="fullWidth">
+
+                <select id="subPrerequisite" class="fullWidth">
+                    <option value="">Prerequisite (optional)</option>
+                </select>
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveSubject">Save</button>
+                <button id="closeSubjectForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="curriculumFormModal">
+        <div class="formContainer">
+            <h3>Add Curriculum</h3>
+
+            <div class="formGrid">
+                <select id="curProgram"></select>
+                <select id="curSubject"></select>
+                <input type="text" id="curYearLevel" placeholder="Year Level">
+                <input type="text" id="curSemester" placeholder="Semester">
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveCurriculum">Save</button>
+                <button id="closeCurriculumForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="sectionFormModal">
+        <div class="formContainer">
+            <h3>Add Section</h3>
+
+            <div class="formGrid">
+                <input type="text" id="sectionName" placeholder="Section Name" class="fullWidth">
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveSection">Save</button>
+                <button id="closeSectionForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="instructorFormModal">
+        <div class="formContainer">
+            <h3>Add Instructor</h3>
+
+            <div class="formGrid">
+                <input type="text" id="insName" placeholder="Full Name" class="fullWidth">
+
+                <input type="text" id="insDepartment" placeholder="Department">
+                <input type="text" id="insContact" placeholder="Contact Number">
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveInstructor">Save</button>
+                <button id="closeInstructorForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="scheduleFormModal">
+        <div class="formContainer">
+            <h3>Add Schedule</h3>
+
+            <div class="formGrid">
+                <input type="text" id="schDay" placeholder="Day">
+
+                <input type="time" id="schStart">
+                <input type="time" id="schEnd">
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveSchedule">Save</button>
+                <button id="closeScheduleForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="formModal" id="programFormModal">
+        <div class="formContainer">
+            <h3>Add Program</h3>
+
+            <div class="formGrid">
+                <input type="text" id="progName" placeholder="Program Name" class="fullWidth">
+                <input type="text" id="progMajor" placeholder="Major" class="fullWidth">
+            </div>
+
+            <div class="formButtons">
+                <button class="saveFormButton" id="saveProgram">Save</button>
+                <button id="closeProgramForm">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
-
 </body>
 </html>

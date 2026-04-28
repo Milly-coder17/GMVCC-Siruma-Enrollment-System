@@ -1,0 +1,451 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #f3f6fb;
+}
+
+.topHeader {
+    background-color: #0C4B8E;
+    font-family: "Lora", sans-serif;
+    color: white;
+    padding: 18px 32px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(12, 75, 142, 0.16);
+}
+
+.topHeader h1 {
+    font-size: clamp(28px, 3vw, 46px);
+    line-height: 1.1;
+    word-break: break-word;
+}
+
+.sideBar {
+    height: 100%;
+    width: 220px;
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    background: #e6e6e6;
+    overflow-y: auto;
+}
+
+.navButton, .programButton {
+    padding: 12px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.navButton:hover, .programButton:hover {
+    background: #d0d0d0;
+}
+
+.navButton.active, .programButton:active {
+    background: #0C4B8E;
+    color: white;
+}
+
+.mainBody {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.contentArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: white;
+}
+
+.mainContentHeader {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    align-items: center;
+    width: 100%;
+    background-color: white;
+    flex-shrink: 0;
+}
+
+.mainContentHeader h2 {
+    font-size: 24px;
+    color: #101828;
+}
+
+#searchStudentBar,
+#searchClassOffering,
+#searchProgram,
+#searchGuardianBar,
+#searchSectionBar,
+#searchSubjectBar,
+#searchInstructorBar,
+#searchScheduleBar,
+#searchRelationshipBar,
+#searchEnrollmentBar,
+#searchProgramHistoryBar,
+#searchCurriculumBar,
+#searchClassScheduleBar {
+    flex: 1;
+    min-width: 260px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.addButton {
+    padding: 10px 15px;
+    background: #0C4B8E;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+#students .mainContentArea,
+#subjects .mainContentArea,
+#classOfferings .mainContentArea,
+#programs .mainContentArea,
+#instructors .mainContentArea,
+#guardians .mainContentArea,
+#sections .mainContentArea,
+#schedules .mainContentArea,
+#relationships .mainContentArea,
+#enrollments .mainContentArea,
+#programHistory .mainContentArea,
+#curriculums .mainContentArea,
+#classSchedules .mainContentArea {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0 20px 20px;
+    overflow: auto;
+    background: white;
+}
+
+table {
+    width: 100%;
+    min-width: max-content;
+    background: white;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+th {
+    background: #0C4B8E;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+table th:first-child,
+table td:first-child {
+    width: 40px !important;
+    min-width: 40px;
+    max-width: 40px;
+    padding-left: 4px;
+    padding-right: 4px;
+    text-align: center;
+}
+
+table th:last-child,
+table td:last-child {
+    white-space: nowrap;
+}
+
+.page {
+    display: none;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+}
+
+.page.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown {
+    display: none;
+}
+
+.navItem.open .dropdown {
+    display: flex;
+    flex-direction: column;
+    padding-left: 15px;
+}
+
+.subButton {
+    padding: 10px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.subButton:hover {
+    background: #d0d0d0;
+}
+
+.subButton.active {
+    background: #0C4B8E;
+    color: white;
+}
+
+.arrow {
+    float: right;
+    transition: transform 0.3s;
+}
+
+.navItem.open .arrow {
+    transform: rotate(90deg);
+}
+
+.formModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.formContainer {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: min(640px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.formGrid > * {
+    min-width: 0;
+}
+
+.formGrid input,
+.formGrid select {
+    width: 100%;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.fullWidth {
+    grid-column: span 2;
+}
+
+.formButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+#closeStudentForm {
+    background: #ccc;
+}
+
+.formButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.formButtons button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.saveFormButton {
+    background: #0C4B8E;
+    color: white;
+}
+
+.saveFormButton:hover {
+    background: #0a3d73;
+    transform: translateY(-1px);
+}
+
+.saveFormButton:active {
+    transform: scale(0.97);
+}
+
+#closeStudentForm {
+    background: #e0e0e0;
+    color: #333;
+}
+
+#closeStudentForm:hover {
+    background: #cfcfcf;
+    transform: translateY(-1px);
+}
+
+#closeStudentForm:active {
+    transform: scale(0.97);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.formGroup label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+}
+
+.formGroup input,
+.formGroup select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.formHint {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.formHint span {
+    font-size: 12px;
+    font-weight: 600;
+    color: #444;
+}
+
+.tableActions {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.actionButton {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    color: white;
+    background: #0C4B8E;
+}
+
+.actionButton.deleteAction {
+    background: #b42318;
+}
+
+.actionButton:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 640px) {
+    .topHeader {
+        padding: 14px 18px;
+    }
+
+    .sideBar {
+        width: 190px;
+        min-width: 190px;
+        padding: 14px;
+    }
+
+    .mainContentHeader {
+        padding: 12px;
+    }
+
+    #searchStudentBar,
+    #searchClassOffering,
+    #searchProgram,
+    #searchGuardianBar,
+    #searchSectionBar,
+    #searchSubjectBar,
+    #searchInstructorBar,
+    #searchScheduleBar,
+    #searchRelationshipBar,
+    #searchEnrollmentBar,
+    #searchProgramHistoryBar,
+    #searchCurriculumBar,
+    #searchClassScheduleBar {
+        min-width: 100%;
+    }
+
+    .formContainer {
+        padding: 18px;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .fullWidth {
+        grid-column: span 1;
+    }
+}

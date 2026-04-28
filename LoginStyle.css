@@ -1,0 +1,45 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #0C4B8E;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+.loginWrapper {
+    background-color: white;
+    border-radius: 25px;
+    padding: 60px 50px;
+    text-align: center;
+}
+
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#loginForm > input{
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 1px solid rgb(99, 99, 99);
+}
+
+#loginButton {
+    background-color: #0C4B8E;
+    border-radius: 5px;
+    width: 70px;
+    padding: 10px;
+    cursor: pointer;
+    color: white;
+    border: none;
+}
+
+p {
+    font-size: 13px;
+}
