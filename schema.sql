@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS section (
 CREATE TABLE IF NOT EXISTS instructor (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(160) NOT NULL,
-    department VARCHAR(120),
+    department VARCHAR(180),
     contact_number VARCHAR(30)
 );
 
@@ -82,7 +82,8 @@ CREATE TABLE IF NOT EXISTS schedule (
     id INT AUTO_INCREMENT PRIMARY KEY,
     day VARCHAR(30) NOT NULL,
     time_start TIME NOT NULL,
-    time_end TIME NOT NULL
+    time_end TIME NOT NULL,
+    UNIQUE KEY uq_schedule_slot (day, time_start, time_end)
 );
 
 CREATE TABLE IF NOT EXISTS class_offering (
@@ -93,7 +94,7 @@ CREATE TABLE IF NOT EXISTS class_offering (
     schedule_id INT,
     instructor_id INT,
     school_year VARCHAR(20) NOT NULL,
-    sem VARCHAR(20) NOT NULL,
+    sem VARCHAR(30) NOT NULL,
     CONSTRAINT fk_class_section
         FOREIGN KEY (section_id) REFERENCES section(id)
         ON UPDATE CASCADE
@@ -131,6 +132,7 @@ CREATE TABLE IF NOT EXISTS enrollment (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT NOT NULL,
     class_id INT NOT NULL,
+    status VARCHAR(40) NOT NULL DEFAULT 'Enrolled',
     enrollment_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_student_class_enrollment (student_id, class_id),
     CONSTRAINT fk_enrollment_student
@@ -180,9 +182,25 @@ CREATE TABLE IF NOT EXISTS curriculum (
 CREATE TABLE IF NOT EXISTS user_account (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'admin',
+    student_id INT,
+    CONSTRAINT fk_user_account_student
+        FOREIGN KEY (student_id) REFERENCES student(student_id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
 );
 
-INSERT INTO user_account (username, password)
-VALUES ('admin', '123')
-ON DUPLICATE KEY UPDATE username = username;
+INSERT INTO user_account (username, password, role, student_id)
+VALUES ('admin', '123', 'admin', NULL)
+ON DUPLICATE KEY UPDATE role = 'admin', student_id = NULL;
+
+INSERT INTO user_account (username, password, role, student_id)
+SELECT lrn, '123', 'student', student_id
+FROM student
+WHERE lrn IS NOT NULL
+  AND lrn <> ''
+ON DUPLICATE KEY UPDATE
+    role = IF(role = 'student', 'student', role),
+    student_id = IF(role = 'student', VALUES(student_id), student_id),
+    password = IF(role = 'student', '123', password);

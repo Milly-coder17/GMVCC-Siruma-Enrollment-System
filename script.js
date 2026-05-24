@@ -1,4 +1,11 @@
-const API_BASE = "http://127.0.0.1:5000/api";
+const API_BASE = (
+    window.ENROLLMENT_API_BASE
+    || localStorage.getItem("enrollmentApiBase")
+    || `${window.location.protocol}//${window.location.hostname || "127.0.0.1"}:5000/api`
+).replace(/\/$/, "");
+const SESSION_KEY = "enrollmentSession";
+
+let currentSession = readSession();
 
 const state = {
     students: [],
@@ -66,6 +73,39 @@ const modalConfig = {
 
 let backendAlertShown = false;
 
+function readSession() {
+    try {
+        return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    } catch {
+        return null;
+    }
+}
+
+function saveSession(data) {
+    currentSession = {
+        token: data.token,
+        user: data.user
+    };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(currentSession));
+}
+
+function clearSession() {
+    currentSession = null;
+    localStorage.removeItem(SESSION_KEY);
+}
+
+function currentUser() {
+    return currentSession?.user || null;
+}
+
+function isStudent() {
+    return currentUser()?.role === "student";
+}
+
+function isAdmin() {
+    return currentUser()?.role === "admin";
+}
+
 function byId(id) {
     return document.getElementById(id);
 }
@@ -89,7 +129,8 @@ function fullName(first, middle, last) {
 }
 
 function programLabel(program) {
-    return [program?.program_name, program?.major].filter(Boolean).join(" - ");
+    if (!program?.major) return program?.program_name || "";
+    return `${program.program_name} major in ${program.major}`;
 }
 
 function formatTime(value) {
@@ -118,17 +159,77 @@ function classOfferingLabel(offering) {
     return `${subject || "Class"} | ${offering.section_name || "No section"} | ${offering.room || "No room"} | ${offering.school_year || ""} ${offering.sem || ""}`.trim();
 }
 
+function currentSchoolYear(date = new Date()) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const startYear = month >= 6 ? year : year - 1;
+    return `${startYear}-${startYear + 1}`;
+}
+
+function currentSemester(date = new Date()) {
+    const month = date.getMonth() + 1;
+    return month >= 6 && month <= 10 ? "1st Semester" : "2nd Semester";
+}
+
+function setCurrentClassOfferingTerm() {
+    const schoolYear = byId("coSchoolYear");
+    const semester = byId("coSem");
+    if (schoolYear) schoolYear.value = currentSchoolYear();
+    if (semester) semester.value = currentSemester();
+}
+
 function display(value, fallback = "-") {
     return escapeHtml(value || fallback);
 }
 
+function naturalSubjectCodeParts(code) {
+    const value = String(code || "").trim();
+    const match = value.match(/^(.*?)(?:\s+(\d+))?$/);
+    return {
+        prefix: (match?.[1] || value).trim().toLowerCase(),
+        number: match?.[2] ? Number(match[2]) : 0,
+        code: value.toLowerCase()
+    };
+}
+
+function compareSubjectCodes(a, b) {
+    const left = naturalSubjectCodeParts(a?.subject_code ?? a);
+    const right = naturalSubjectCodeParts(b?.subject_code ?? b);
+    return left.prefix.localeCompare(right.prefix)
+        || left.number - right.number
+        || left.code.localeCompare(right.code);
+}
+
+function curriculumOrderValue(value) {
+    return {
+        "1st Year": 1,
+        "2nd Year": 2,
+        "3rd Year": 3,
+        "4th Year": 4,
+        "1st Semester": 1,
+        "2nd Semester": 2
+    }[value] || 99;
+}
+
+function compareCurriculumRows(a, b) {
+    return curriculumOrderValue(a?.year_level) - curriculumOrderValue(b?.year_level)
+        || curriculumOrderValue(a?.semester) - curriculumOrderValue(b?.semester)
+        || compareSubjectCodes(a, b);
+}
+
 async function apiFetch(path, options = {}) {
+    const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+    };
+
+    if (currentSession?.token) {
+        headers.Authorization = `Bearer ${currentSession.token}`;
+    }
+
     const response = await fetch(`${API_BASE}${path}`, {
         ...options,
-        headers: {
-            "Content-Type": "application/json",
-            ...(options.headers || {})
-        }
+        headers
     });
 
     const text = await response.text();
@@ -141,6 +242,10 @@ async function apiFetch(path, options = {}) {
     }
 
     if (!response.ok) {
+        if (response.status === 401 && document.querySelector(".contentArea")) {
+            clearSession();
+            window.location.href = "index.html";
+        }
         throw new Error(data.error || "Request failed.");
     }
 
@@ -237,6 +342,8 @@ function getRecord(collectionName, id) {
 }
 
 function buildActionButtons(entity, id) {
+    if (!isAdmin()) return "";
+
     return `
         <div class="tableActions">
             <button type="button" class="actionButton" onclick='handleEdit(${JSON.stringify(entity)}, ${JSON.stringify(id)})'>Edit</button>
@@ -245,8 +352,40 @@ function buildActionButtons(entity, id) {
     `;
 }
 
+function setTableHeaders(tableId, headers) {
+    const table = byId(tableId)?.closest("table");
+    const row = table?.querySelector("thead tr");
+    if (!row) return;
+
+    row.innerHTML = headers.map(header => `<th>${escapeHtml(header)}</th>`).join("");
+}
+
+function isEnrolledInClass(classId) {
+    return state.enrollments.some(enrollment => String(enrollment.class_id) === String(classId));
+}
+
+function buildStudentEnrollButton(offering) {
+    const classId = offering.class_offering_id;
+    if (isEnrolledInClass(classId)) {
+        return `<button type="button" class="actionButton" disabled>Enrolled</button>`;
+    }
+    return `<button type="button" class="actionButton" onclick='handleStudentEnroll(${JSON.stringify(classId)})'>Enroll</button>`;
+}
+
+function buildStudentDropButton(enrollmentId) {
+    return `<button type="button" class="actionButton deleteAction" onclick='handleStudentDrop(${JSON.stringify(enrollmentId)})'>Drop</button>`;
+}
+
 function renderEmpty(table, colSpan, label) {
-    table.innerHTML = `<tr><td colspan="${colSpan}">No ${escapeHtml(label)} found.</td></tr>`;
+    const title = `No ${label} yet`;
+    table.innerHTML = `
+        <tr>
+            <td class="emptyStateCell" colspan="${colSpan}">
+                <div class="emptyStateTitle">${escapeHtml(title)}</div>
+                <div class="emptyStateText">Records will appear here once they are added.</div>
+            </td>
+        </tr>
+    `;
 }
 
 function renderStudents(rows) {
@@ -304,7 +443,29 @@ function renderRelationships(rows) {
 function renderEnrollments(rows) {
     const table = byId("enrollmentsTable");
     if (!table) return;
-    if (!rows.length) return renderEmpty(table, 8, "enrollments");
+
+    if (isStudent()) {
+        setTableHeaders("enrollmentsTable", ["No.", "Subject", "Section", "Schedule", "Instructor", "School Year", "Sem", "Status", "Actions"]);
+        if (!rows.length) return renderEmpty(table, 9, "enrollments");
+
+        table.innerHTML = rows.map((enrollment, index) => `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${display([enrollment.subject_code, enrollment.subject_title].filter(Boolean).join(" - ") || enrollment.room)}</td>
+                <td>${display(enrollment.section_name)}</td>
+                <td>${display(scheduleLabel(enrollment))}</td>
+                <td>${display(enrollment.instructor_name)}</td>
+                <td>${escapeHtml(enrollment.school_year || "")}</td>
+                <td>${escapeHtml(enrollment.sem || "")}</td>
+                <td>${display(enrollment.status || "Enrolled")}</td>
+                <td>${buildStudentDropButton(enrollment.enrollment_id)}</td>
+            </tr>
+        `).join("");
+        return;
+    }
+
+    setTableHeaders("enrollmentsTable", ["No.", "Student", "Class Offering", "Section", "Schedule", "Instructor", "School Year", "Sem", "Status", "Timestamp", "Actions"]);
+    if (!rows.length) return renderEmpty(table, 11, "enrollments");
 
     table.innerHTML = rows.map((enrollment, index) => `
         <tr>
@@ -312,8 +473,11 @@ function renderEnrollments(rows) {
             <td>${escapeHtml(enrollment.student_name)}</td>
             <td>${display([enrollment.subject_code, enrollment.subject_title].filter(Boolean).join(" - ") || enrollment.room)}</td>
             <td>${display(enrollment.section_name)}</td>
+            <td>${display(scheduleLabel(enrollment))}</td>
+            <td>${display(enrollment.instructor_name)}</td>
             <td>${escapeHtml(enrollment.school_year || "")}</td>
             <td>${escapeHtml(enrollment.sem || "")}</td>
+            <td>${display(enrollment.status || "Enrolled")}</td>
             <td>${escapeHtml(enrollment.enrollment_timestamp || "")}</td>
             <td>${buildActionButtons("enrollments", enrollment.enrollment_id)}</td>
         </tr>
@@ -356,16 +520,22 @@ function renderPrograms(rows) {
 function renderSubjects(rows) {
     const table = byId("subjectsTable");
     if (!table) return;
-    if (!rows.length) return renderEmpty(table, 6, "subjects");
+    const studentView = isStudent();
+    rows = [...rows].sort(studentView ? compareCurriculumRows : compareSubjectCodes);
+    setTableHeaders("subjectsTable", studentView
+        ? ["No.", "Year Level", "Semester", "Subject Code", "Title", "Units", "Prerequisite"]
+        : ["No.", "Subject Code", "Title", "Units", "Prerequisite", "Actions"]);
+    if (!rows.length) return renderEmpty(table, studentView ? 7 : 6, "subjects");
 
     table.innerHTML = rows.map((subject, index) => `
         <tr>
             <td>${index + 1}</td>
+            ${studentView ? `<td>${escapeHtml(subject.year_level || "")}</td><td>${escapeHtml(subject.semester || "")}</td>` : ""}
             <td>${escapeHtml(subject.subject_code)}</td>
             <td>${escapeHtml(subject.title)}</td>
             <td>${escapeHtml(subject.units)}</td>
             <td>${display(subject.prerequisite_code)}</td>
-            <td>${buildActionButtons("subjects", subject.subject_code)}</td>
+            ${studentView ? "" : `<td>${buildActionButtons("subjects", subject.subject_code)}</td>`}
         </tr>
     `).join("");
 }
@@ -436,6 +606,7 @@ function renderSchedules(rows) {
 function renderClassOfferings(rows) {
     const table = byId("offeringsTable");
     if (!table) return;
+    setTableHeaders("offeringsTable", ["No.", "Room", "Section", "Subject", "Schedule", "Instructor", "School Year", "Sem", "Actions"]);
     if (!rows.length) return renderEmpty(table, 9, "class offerings");
 
     table.innerHTML = rows.map((offering, index) => `
@@ -448,7 +619,7 @@ function renderClassOfferings(rows) {
             <td>${display(offering.instructor_name)}</td>
             <td>${escapeHtml(offering.school_year || "")}</td>
             <td>${escapeHtml(offering.sem || "")}</td>
-            <td>${buildActionButtons("classOfferings", offering.class_offering_id)}</td>
+            <td>${isStudent() ? buildStudentEnrollButton(offering) : buildActionButtons("classOfferings", offering.class_offering_id)}</td>
         </tr>
     `).join("");
 }
@@ -506,8 +677,11 @@ async function loadEnrollments() {
         "subject_code",
         "subject_title",
         "section_name",
+        "instructor_name",
         "school_year",
-        "sem"
+        "sem",
+        "status",
+        row => scheduleLabel(row)
     ]);
 }
 
@@ -588,21 +762,12 @@ async function loadClassSchedules() {
 
 function populateStudentDropdowns() {
     const programSelect = byId("program");
-    const guardianSelect = byId("studentGuardianSelect");
 
     if (programSelect) {
         programSelect.innerHTML = "";
         programSelect.appendChild(option("", "Program"));
         state.programs.forEach(program => {
             programSelect.appendChild(option(program.program_id, programLabel(program)));
-        });
-    }
-
-    if (guardianSelect) {
-        guardianSelect.innerHTML = "";
-        guardianSelect.appendChild(option("", "Select Guardian"));
-        state.guardians.forEach(guardian => {
-            guardianSelect.appendChild(option(guardian.guardian_id, fullName(guardian.first_name, guardian.middle_name, guardian.last_name)));
         });
     }
 }
@@ -762,10 +927,66 @@ function populateClassScheduleDropdowns() {
     }
 }
 
+function activatePage(pageId) {
+    document.querySelectorAll(".programButton, .subButton, .studentNavButton").forEach(item => {
+        item.classList.toggle("active", item.dataset.page === pageId);
+    });
+
+    document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+    const targetPage = byId(pageId);
+    if (targetPage) targetPage.classList.add("active");
+
+}
+
+function applyRoleInterface() {
+    const user = currentUser();
+    if (!user) return;
+
+    document.body.dataset.role = user.role;
+
+    const label = byId("currentUserLabel");
+    if (label) {
+        const displayName = user.role === "student" ? (user.student_name || user.username) : user.username;
+        label.textContent = `${displayName} (${user.role})`;
+    }
+
+    if (isStudent()) {
+        byId("classOfferings")?.querySelector("h2")?.replaceChildren(document.createTextNode("Available Class Offerings"));
+        byId("subjects")?.querySelector("h2")?.replaceChildren(document.createTextNode("My Curriculum Subjects"));
+        byId("enrollments")?.querySelector("h2")?.replaceChildren(document.createTextNode("My Enrolled Subjects"));
+        activatePage("classOfferings");
+        return;
+    }
+
+    document.body.dataset.role = "admin";
+    const activePage = document.querySelector(".page.active")?.id || "students";
+    activatePage(activePage);
+}
+
+function requireMainSession() {
+    if (!document.querySelector(".contentArea")) return false;
+    currentSession = readSession();
+    if (!currentSession?.token || !currentSession?.user) {
+        window.location.href = "index.html";
+        return false;
+    }
+    return true;
+}
+
 function setupLogin() {
     const loginButton = byId("loginButton");
     const loginForm = byId("loginForm");
     if (!loginButton && !loginForm) return;
+
+    if (currentSession?.token) {
+        apiFetch("/me")
+            .then(() => {
+                window.location.href = "main.html";
+            })
+            .catch(() => {
+                clearSession();
+            });
+    }
 
     async function submitLogin(event) {
         if (event) event.preventDefault();
@@ -780,6 +1001,7 @@ function setupLogin() {
             });
 
             if (data.success) {
+                saveSession(data);
                 window.location.href = "main.html";
             } else {
                 alert("Invalid username or password.");
@@ -793,6 +1015,22 @@ function setupLogin() {
     if (loginForm) loginForm.addEventListener("submit", submitLogin);
 }
 
+function setupLogout() {
+    const logoutButton = byId("logoutButton");
+    if (!logoutButton) return;
+
+    logoutButton.addEventListener("click", async () => {
+        try {
+            await apiFetch("/logout", { method: "POST" });
+        } catch (error) {
+            console.warn(error);
+        } finally {
+            clearSession();
+            window.location.href = "index.html";
+        }
+    });
+}
+
 function setupNavigation() {
     document.querySelectorAll(".hasDropdown").forEach(button => {
         button.addEventListener("click", function () {
@@ -800,16 +1038,9 @@ function setupNavigation() {
         });
     });
 
-    document.querySelectorAll(".programButton, .subButton").forEach(button => {
+    document.querySelectorAll(".programButton, .subButton, .studentNavButton").forEach(button => {
         button.addEventListener("click", function () {
-            document.querySelectorAll(".programButton, .subButton").forEach(item => item.classList.remove("active"));
-            this.classList.add("active");
-
-            document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
-            const targetPage = byId(this.dataset.page);
-            if (targetPage) {
-                targetPage.classList.add("active");
-            }
+            activatePage(this.dataset.page);
         });
     });
 }
@@ -819,7 +1050,7 @@ function setupSearches() {
         ["searchStudentBar", () => renderFiltered("students", "searchStudentBar", renderStudents, ["lrn", "program_name", "major", row => fullName(row.first_name, row.middle_name, row.last_name), "guardian_name"])],
         ["searchGuardianBar", () => renderFiltered("guardians", "searchGuardianBar", renderGuardians, [row => fullName(row.first_name, row.middle_name, row.last_name), "contact_number"])],
         ["searchRelationshipBar", () => renderFiltered("relationships", "searchRelationshipBar", renderRelationships, ["student_name", "guardian_name", "relationship_type"])],
-        ["searchEnrollmentBar", () => renderFiltered("enrollments", "searchEnrollmentBar", renderEnrollments, ["student_name", "subject_code", "subject_title", "section_name", "school_year", "sem"])],
+        ["searchEnrollmentBar", () => renderFiltered("enrollments", "searchEnrollmentBar", renderEnrollments, ["student_name", "subject_code", "subject_title", "section_name", "instructor_name", "school_year", "sem", "status", row => scheduleLabel(row)])],
         ["searchProgramHistoryBar", () => renderFiltered("programHistory", "searchProgramHistoryBar", renderProgramHistory, ["student_name", "program_name", "major", "school_year", "semester", "status"])],
         ["searchProgram", () => renderFiltered("programs", "searchProgram", renderPrograms, ["program_name", "major"])],
         ["searchSubjectBar", () => renderFiltered("subjects", "searchSubjectBar", renderSubjects, ["subject_code", "title", "prerequisite_code"])],
@@ -839,8 +1070,18 @@ function setupSearches() {
 
 async function initializeMainPage() {
     if (!document.querySelector(".contentArea")) return;
+    if (!requireMainSession()) return;
+
+    applyRoleInterface();
 
     try {
+        if (isStudent()) {
+            await loadEnrollments();
+            await loadSubjects();
+            await loadClassOfferings();
+            return;
+        }
+
         await Promise.all([
             loadStudents(),
             loadGuardians(),
@@ -905,8 +1146,35 @@ window.handleDelete = async function handleDelete(entityKey, recordId) {
     }
 };
 
+window.handleStudentEnroll = async function handleStudentEnroll(classId) {
+    try {
+        await apiFetch("/enrollments", {
+            method: "POST",
+            body: JSON.stringify({ ClassID: classId })
+        });
+        await loadEnrollments();
+        await loadClassOfferings();
+        alert("Enrollment submitted.");
+    } catch (error) {
+        alert(`Failed to enroll: ${error.message}`);
+    }
+};
+
+window.handleStudentDrop = async function handleStudentDrop(enrollmentId) {
+    if (!confirm("Drop this enrolled subject?")) return;
+
+    try {
+        await apiFetch(`/enrollments/${enrollmentId}`, { method: "DELETE" });
+        await loadEnrollments();
+        await loadClassOfferings();
+        alert("Enrollment dropped.");
+    } catch (error) {
+        alert(`Failed to drop enrollment: ${error.message}`);
+    }
+};
+
 async function editStudent(studentId) {
-    await Promise.all([loadPrograms(), loadGuardians()]);
+    await loadPrograms();
     const student = getRecord("students", studentId);
     if (!student) return;
 
@@ -921,7 +1189,11 @@ async function editStudent(studentId) {
     byId("address").value = student.address || "";
     byId("contact").value = student.contact_no || "";
     byId("program").value = student.program_id || "";
-    byId("studentGuardianSelect").value = student.guardian_id || "";
+    byId("studentGuardianId").value = student.guardian_id || "";
+    byId("guardianFirstName").value = student.guardian_first_name || "";
+    byId("guardianMiddleName").value = student.guardian_middle_name || "";
+    byId("guardianLastName").value = student.guardian_last_name || "";
+    byId("guardianContactNumber").value = student.guardian_contact_number || "";
     byId("studentRelationshipType").value = student.relationship_type || "";
     showModal(modal);
 }
@@ -960,6 +1232,7 @@ async function editEnrollment(enrollmentId) {
     const modal = setModalMode("enrollments", enrollmentId);
     byId("enStudent").value = enrollment.student_id || "";
     byId("enClass").value = enrollment.class_id || "";
+    byId("enStatus").value = enrollment.status || "Enrolled";
     showModal(modal);
 }
 
@@ -1104,11 +1377,13 @@ window.handleEdit = async function handleEdit(entityKey, recordId) {
 };
 
 function setupForms() {
+    if (isStudent()) return;
+
     const addStudentButton = byId("addStudentBtn");
     if (addStudentButton) {
         addStudentButton.onclick = async () => {
             try {
-                await Promise.all([loadPrograms(), loadGuardians()]);
+                await loadPrograms();
                 populateStudentDropdowns();
                 const modal = setModalMode("students", null);
                 resetModal(modal);
@@ -1132,7 +1407,11 @@ function setupForms() {
                 Address: valueOf("address"),
                 Contact: valueOf("contact"),
                 ProgramID: valueOf("program"),
-                GuardianID: valueOf("studentGuardianSelect"),
+                GuardianID: valueOf("studentGuardianId"),
+                GuardianFirstName: valueOf("guardianFirstName"),
+                GuardianMiddleName: valueOf("guardianMiddleName"),
+                GuardianLastName: valueOf("guardianLastName"),
+                GuardianContactNumber: valueOf("guardianContactNumber"),
                 RelationshipType: valueOf("studentRelationshipType")
             };
 
@@ -1212,6 +1491,7 @@ function setupForms() {
                 populateEnrollmentDropdowns();
                 const modal = setModalMode("enrollments", null);
                 resetModal(modal);
+                byId("enStatus").value = "Enrolled";
                 showModal(modal);
             } catch (error) {
                 handleLoadError(error);
@@ -1225,7 +1505,8 @@ function setupForms() {
             try {
                 await saveEntity("enrollments", "/enrollments", {
                     StudentID: valueOf("enStudent"),
-                    ClassID: valueOf("enClass")
+                    ClassID: valueOf("enClass"),
+                    Status: valueOf("enStatus") || "Enrolled"
                 }, "Enrollment");
             } catch (error) {
                 alert(`Failed to save enrollment: ${error.message}`);
@@ -1428,6 +1709,7 @@ function setupForms() {
                 populateClassOfferingDropdowns();
                 const modal = setModalMode("classOfferings", null);
                 resetModal(modal);
+                setCurrentClassOfferingTerm();
                 showModal(modal);
             } catch (error) {
                 handleLoadError(error);
@@ -1493,6 +1775,7 @@ function setupForms() {
 
 document.addEventListener("DOMContentLoaded", () => {
     setupLogin();
+    setupLogout();
     setupNavigation();
     setupSearches();
     setupForms();

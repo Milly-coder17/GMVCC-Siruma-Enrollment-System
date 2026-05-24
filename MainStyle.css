@@ -8,59 +8,104 @@
 body {
     margin: 0;
     padding: 0;
+    height: 100vh;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: #f3f6fb;
+    color: #172033;
+    background: #f4f7fb;
 }
 
 .topHeader {
     background-color: #0C4B8E;
     font-family: "Lora", sans-serif;
     color: white;
-    padding: 18px 32px;
+    padding: 14px 28px;
     flex-shrink: 0;
     box-shadow: 0 2px 10px rgba(12, 75, 142, 0.16);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
 }
 
 .topHeader h1 {
-    font-size: clamp(28px, 3vw, 46px);
+    font-size: clamp(24px, 2.4vw, 36px);
     line-height: 1.1;
     word-break: break-word;
 }
 
+.sessionTools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    font-family: "Nunito Sans", sans-serif;
+}
+
+#currentUserLabel {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+#logoutButton {
+    border: 1px solid rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.12);
+    color: white;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
 .sideBar {
     height: 100%;
-    width: 220px;
-    min-width: 220px;
+    width: 250px;
+    min-width: 250px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    padding: 20px;
-    background: #e6e6e6;
+    gap: 10px;
+    padding: 18px 16px;
+    background: #eef3f8;
+    border-right: 1px solid #d7e0ea;
     overflow-y: auto;
 }
 
-.navButton, .programButton {
-    padding: 12px;
+.navButton, .programButton, .studentNavButton {
+    width: 100%;
+    padding: 11px 12px;
     border: none;
     background: transparent;
     text-align: left;
     cursor: pointer;
     border-radius: 6px;
-    font-size: 25px;
-    font-family: "Lora", sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #172033;
     transition: 0.2s;
 }
 
-.navButton:hover, .programButton:hover {
-    background: #d0d0d0;
+.navButton:hover, .programButton:hover, .studentNavButton:hover {
+    background: #dbe6f2;
 }
 
-.navButton.active, .programButton:active {
+.navButton.active, .programButton.active, .programButton:active, .studentNavButton.active {
     background: #0C4B8E;
     color: white;
+}
+
+.studentOnly {
+    display: none;
+}
+
+body[data-role="student"] .studentOnly {
+    display: block;
+}
+
+body[data-role="student"] .navItem,
+body[data-role="student"] .programButton,
+body[data-role="student"] .addButton {
+    display: none;
 }
 
 .mainBody {
@@ -78,24 +123,24 @@ body {
     min-width: 0;
     min-height: 0;
     overflow: hidden;
-    background: white;
+    background: #f8fafc;
 }
 
 .mainContentHeader {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 15px;
-    padding: 20px;
-    border-bottom: 1px solid #ddd;
+    gap: 14px;
+    padding: 18px 24px;
+    border-bottom: 1px solid #dce5ef;
     align-items: center;
     width: 100%;
-    background-color: white;
+    background-color: #f8fafc;
     flex-shrink: 0;
 }
 
 .mainContentHeader h2 {
-    font-size: 24px;
+    font-size: 22px;
     color: #101828;
 }
 
@@ -114,13 +159,14 @@ body {
 #searchClassScheduleBar {
     flex: 1;
     min-width: 260px;
-    padding: 10px;
-    border: 1px solid #ccc;
+    padding: 11px 12px;
+    border: 1px solid #cbd5e1;
     border-radius: 6px;
+    background: white;
 }
 
 .addButton {
-    padding: 10px 15px;
+    padding: 11px 16px;
     background: #0C4B8E;
     color: white;
     border: none;
@@ -146,9 +192,54 @@ body {
     width: 100%;
     min-width: 0;
     min-height: 0;
-    padding: 0 20px 20px;
+    padding: 0 24px 24px;
     overflow: auto;
-    background: white;
+    background: #f8fafc;
+}
+
+#students .mainContentArea,
+#subjects .mainContentArea,
+#curriculums .mainContentArea {
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    padding-right: 16px;
+    padding-bottom: 48px;
+    scrollbar-width: thin;
+    scrollbar-color: #9ca3af #ffffff;
+}
+
+#students .mainContentArea::-webkit-scrollbar,
+#subjects .mainContentArea::-webkit-scrollbar,
+#curriculums .mainContentArea::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+#students .mainContentArea::-webkit-scrollbar-track,
+#subjects .mainContentArea::-webkit-scrollbar-track,
+#curriculums .mainContentArea::-webkit-scrollbar-track {
+    background: #ffffff;
+    border-left: 1px solid #e5e7eb;
+}
+
+#students .mainContentArea::-webkit-scrollbar-thumb,
+#subjects .mainContentArea::-webkit-scrollbar-thumb,
+#curriculums .mainContentArea::-webkit-scrollbar-thumb {
+    background: #b7bec8;
+    border: 3px solid #ffffff;
+    border-radius: 10px;
+}
+
+#students .mainContentArea::-webkit-scrollbar-thumb:hover,
+#subjects .mainContentArea::-webkit-scrollbar-thumb:hover,
+#curriculums .mainContentArea::-webkit-scrollbar-thumb:hover {
+    background: #8f98a6;
+}
+
+#students .mainContentArea::-webkit-scrollbar-corner,
+#subjects .mainContentArea::-webkit-scrollbar-corner,
+#curriculums .mainContentArea::-webkit-scrollbar-corner {
+    background: #ffffff;
 }
 
 table {
@@ -157,11 +248,12 @@ table {
     background: white;
     border-collapse: collapse;
     table-layout: auto;
+    border: 1px solid #aebfd1;
 }
 
 th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
+    padding: 9px 10px;
+    border: 1px solid #c8d3df;
     overflow: visible;
     text-overflow: clip;
     white-space: nowrap;
@@ -172,9 +264,23 @@ th, td {
 th {
     background: #0C4B8E;
     color: white;
+    font-weight: 800;
     position: sticky;
     top: 0;
     z-index: 1;
+}
+
+tbody tr:nth-child(even) {
+    background: #f4f8fd;
+}
+
+tbody tr:hover {
+    background: #eaf3ff;
+}
+
+td:nth-child(7) {
+    max-width: 340px;
+    white-space: normal;
 }
 
 table th:first-child,
@@ -207,7 +313,7 @@ table td:last-child {
 .navItem {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .dropdown {
@@ -217,23 +323,24 @@ table td:last-child {
 .navItem.open .dropdown {
     display: flex;
     flex-direction: column;
-    padding-left: 15px;
-    gap: 2px;
+    padding-left: 10px;
+    gap: 4px;
 }
 
 .subButton {
-    padding: 10px;
+    padding: 9px 12px;
     border: none;
     background: transparent;
     text-align: left;
     cursor: pointer;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 14px;
+    color: #334155;
     margin: 0;
 }
 
 .subButton:hover {
-    background: #d0d0d0;
+    background: #dbe6f2;
 }
 
 .subButton.active {
@@ -266,8 +373,8 @@ table td:last-child {
 .formContainer {
     background: white;
     padding: 20px;
-    border-radius: 10px;
-    width: min(640px, calc(100vw - 32px));
+    border-radius: 8px;
+    width: min(760px, calc(100vw - 32px));
     max-height: calc(100vh - 32px);
     overflow-y: auto;
     display: flex;
@@ -278,7 +385,7 @@ table td:last-child {
 .formGrid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
 }
 
 .formGrid > * {
@@ -290,8 +397,17 @@ table td:last-child {
     width: 100%;
     min-width: 0;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #cbd5e1;
     border-radius: 6px;
+}
+
+.formSectionLabel {
+    margin-top: 4px;
+    padding-top: 4px;
+    color: #0C4B8E;
+    font-size: 13px;
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 .fullWidth {
@@ -408,9 +524,35 @@ table td:last-child {
     opacity: 0.9;
 }
 
+.actionButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.emptyStateCell {
+    padding: 34px 18px;
+    text-align: center;
+    white-space: normal;
+    background: white;
+}
+
+.emptyStateTitle {
+    color: #172033;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.emptyStateText {
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 14px;
+}
+
 @media (max-width: 640px) {
     .topHeader {
         padding: 14px 18px;
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .sideBar {

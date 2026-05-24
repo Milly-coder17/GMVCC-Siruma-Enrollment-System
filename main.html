@@ -12,10 +12,17 @@
     
     <div class="topHeader">
         <h1>GMVCC-Siruma Enrollment System</h1>
+        <div class="sessionTools">
+            <span id="currentUserLabel"></span>
+            <button type="button" id="logoutButton">Logout</button>
+        </div>
     </div>
 
     <div class="mainBody">
         <nav class="sideBar">
+            <button class="studentNavButton studentOnly active" data-page="classOfferings">Available Classes</button>
+            <button class="studentNavButton studentOnly" data-page="subjects">Subjects</button>
+            <button class="studentNavButton studentOnly" data-page="enrollments">My Enrollment</button>
             <div class="navItem">
                 <button class="navButton hasDropdown"> Students & Guardians <span class="arrow">▶</span>
                 </button>
@@ -366,6 +373,8 @@
             <h3>Add Student</h3>
 
             <div class="formGrid">
+                <div class="formSectionLabel fullWidth">Student Information</div>
+
                 <input type="text" id="lrn" placeholder="LRN">
 
                 <input type="text" id="firstName" placeholder="First Name">
@@ -390,20 +399,36 @@
 
                 <select id="program">
                     <option value="">Program</option>
-                    <option>BSIT</option>
-                    <option>BSBA</option>
-                    <option>BSED</option>
-                    <option>BSHM</option>
+                    <option>Bachelor of Science in Fisheries</option>
+                    <option>Bachelor of Science in Entrepreneurship</option>
+                    <option>Bachelor of Technical Vocational Teacher Education major in Automotive Technology</option>
+                    <option>Bachelor of Technical Vocational Teacher Education major in Computer Hardware Servicing</option>
+                    <option>Bachelor of Technical Vocational Teacher Education major in Heating, Ventilating, and Airconditioning Technology</option>
                 </select>
 
                 <input type="text" id="address" placeholder="Address" class="fullWidth">
 
-                <div class="formHint">
-                    <span>Guardian</span>
-                    <select id="studentGuardianSelect"></select>
-                </div>
+                <div class="formSectionLabel fullWidth">Guardian Information</div>
 
-                <input type="text" id="studentRelationshipType" placeholder="Relationship Type">
+                <input type="hidden" id="studentGuardianId">
+                <input type="text" id="guardianFirstName" placeholder="First Name">
+                <input type="text" id="guardianMiddleName" placeholder="Middle Name">
+
+                <input type="text" id="guardianLastName" placeholder="Last Name">
+                <input type="text" id="guardianContactNumber" placeholder="Contact Number">
+
+                <select id="studentRelationshipType">
+                    <option value="">Relationship Type</option>
+                    <option>Mother</option>
+                    <option>Father</option>
+                    <option>Grandmother</option>
+                    <option>Grandfather</option>
+                    <option>Aunt</option>
+                    <option>Uncle</option>
+                    <option>Sibling</option>
+                    <option>Guardian</option>
+                    <option>Other</option>
+                </select>
             </div>
 
             <div class="formButtons">
@@ -439,7 +464,18 @@
             <div class="formGrid">
                 <select id="relStudent"></select>
                 <select id="relGuardian"></select>
-                <input type="text" id="relType" placeholder="Relationship Type" class="fullWidth">
+                <select id="relType" class="fullWidth">
+                    <option value="">Relationship Type</option>
+                    <option>Mother</option>
+                    <option>Father</option>
+                    <option>Grandmother</option>
+                    <option>Grandfather</option>
+                    <option>Aunt</option>
+                    <option>Uncle</option>
+                    <option>Sibling</option>
+                    <option>Guardian</option>
+                    <option>Other</option>
+                </select>
             </div>
 
             <div class="formButtons">
@@ -456,6 +492,7 @@
             <div class="formGrid">
                 <select id="enStudent"></select>
                 <select id="enClass"></select>
+                <input type="text" id="enStatus" placeholder="Status" value="Enrolled" class="fullWidth">
             </div>
 
             <div class="formButtons">
@@ -586,7 +623,13 @@
             <div class="formGrid">
                 <input type="text" id="insName" placeholder="Full Name" class="fullWidth">
 
-                <input type="text" id="insDepartment" placeholder="Department">
+                <select id="insDepartment">
+                    <option value="">Department</option>
+                    <option>BS Entrepreneurship</option>
+                    <option>BS Fisheries</option>
+                    <option>BTVTED</option>
+                    <option>NSTP</option>
+                </select>
                 <input type="text" id="insContact" placeholder="Contact Number">
             </div>
 
